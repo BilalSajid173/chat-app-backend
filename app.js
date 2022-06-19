@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
-const authRoutes = require("./routes/auth")
+const authRoutes = require("./routes/auth");
 
 const app = express();
 
@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/auth", authRoutes)
+app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
   const message = error.message;
