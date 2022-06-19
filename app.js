@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
+const authRoutes = require("./routes/auth")
 
 const app = express();
 
@@ -15,6 +16,8 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorisation");
   next();
 });
+
+app.use("/auth", authRoutes)
 
 app.use((error, req, res, next) => {
   const message = error.message;
