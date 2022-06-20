@@ -2,6 +2,7 @@ const express = require("express");
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
+const postRoutes = require("./routes/posts");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/auth", authRoutes);
+app.use("/post", postRoutes);
 
 app.use((error, req, res, next) => {
   const message = error.message;
