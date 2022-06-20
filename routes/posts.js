@@ -1,15 +1,14 @@
 const express = require("express");
+const router = express.Router();
 const { body } = require("express-validator");
 const isAuth = require("../middleware/is-auth");
 const postControllers = require("../controllers/posts");
 
-const router = express.Router();
-
 router.post(
-  "/add-post",
+  "/addpost",
   [
-    body("title").trim().isLength({ min: 0 }),
-    body("content").trim().isLength({ min: 0 }),
+    body("title").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
   ],
   isAuth,
   postControllers.createPost

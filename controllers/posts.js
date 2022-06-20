@@ -1,15 +1,14 @@
 const Post = require("../models/post");
 const User = require("../models/user");
-const { validationResults } = require("express-validator");
+const { validationResult } = require("express-validator");
 
 exports.createPost = (req, res, next) => {
-  const errors = validationResults(req);
+  const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Post Creation Failed");
     error.statusCode = 422;
     throw error;
   }
-
   const title = req.body.title;
   const content = req.body.content;
   let author;
