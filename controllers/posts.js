@@ -68,3 +68,28 @@ exports.getAllPosts = (req, res, next) => {
       next(err);
     });
 };
+
+exports.likePost = (req, res, next) => {
+  const postId = req.params.postId;
+  User.findById({ _id: req.userId })
+    .then((user) => {
+      if (user.likedPosts.includes(postId)) {
+        const newLikedPosts = user.likedPosts.filter(
+          (id) => id !== postId
+        );
+        user.likedPosts = [...newLikedPosts];
+      } else {
+        user.likedPosts.push(postId);
+      }
+      return user.save();
+    })
+    .then((result) => {
+      res.status(201).json({ message: "Successful" });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
