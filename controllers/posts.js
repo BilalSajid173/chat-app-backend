@@ -43,3 +43,25 @@ exports.createPost = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getAllPosts = (req, res, next) => {
+  let loadedposts;
+  Post.find()
+    .then((posts) => {
+      loadedposts = posts;
+      return User.findById({ _id: req.userId });
+    })
+    .then((user) => {
+      res.status(200).json({
+        message: "Fetched Posts Successfully!",
+        posts: loadedposts,
+        user: user,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};

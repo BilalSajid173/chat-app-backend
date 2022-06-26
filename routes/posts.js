@@ -14,4 +14,6 @@ router.post(
   postControllers.createPost
 );
 
+router.get("/allposts", isAuth, postControllers.getAllPosts);
+
 module.exports = router;
