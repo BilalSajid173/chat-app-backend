@@ -47,15 +47,18 @@ exports.createPost = (req, res, next) => {
 exports.getAllPosts = (req, res, next) => {
   let loadedposts;
   Post.find()
+    .populate("author")
     .then((posts) => {
       loadedposts = posts;
       return User.findById({ _id: req.userId });
     })
     .then((user) => {
+      const likedPosts = user.likedPosts;
       res.status(200).json({
         message: "Fetched Posts Successfully!",
         posts: loadedposts,
         user: user,
+        likedPosts: likedPosts,
       });
     })
     .catch((err) => {
