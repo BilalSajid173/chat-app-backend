@@ -17,4 +17,6 @@ router.post(
 router.get("/allposts", isAuth, postControllers.getAllPosts);
 
 router.get("/likepost/:postId", isAuth, postControllers.likePost);
+
+router.get("/singlepost/:postId", isAuth, postControllers.getPost);
 module.exports = router;

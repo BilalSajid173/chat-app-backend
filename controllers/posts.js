@@ -93,3 +93,46 @@ exports.likePost = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getPost = (req, res, next) => {
+  const postId = req.params.postId;
+  let loadedPost;
+  let loadedPosts;
+
+  Post.findById({ _id: postId })
+    .populate("author")
+    .then((post) => {
+      if (!post) {
+        const error = new Error("Failed");
+        error.statusCode = 401;
+        throw error;
+      }
+      loadedPost = post;
+      return Post.find().populate("author");
+    })
+    .then((posts) => {
+      if (!posts) {
+        const error = new Error("Failed");
+        error.statusCode = 401;
+        throw error;
+      }
+      loadedPosts = posts;
+      return User.findById({ _id: req.userId });
+    })
+    .then((user) => {
+      const likedPosts = user.likedPosts;
+      res.status(200).json({
+        message: "Fetched Posts Successfully!",
+        post: loadedPost,
+        posts: loadedPosts.slice(-3),
+        user: user,
+        likedPosts: likedPosts,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
