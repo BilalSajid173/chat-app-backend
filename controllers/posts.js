@@ -75,7 +75,7 @@ exports.likePost = (req, res, next) => {
     .then((user) => {
       if (user.likedPosts.includes(postId)) {
         const newLikedPosts = user.likedPosts.filter(
-          (id) => id !== postId
+          (id) => id.toString() !== postId
         );
         user.likedPosts = [...newLikedPosts];
       } else {
