@@ -124,9 +124,40 @@ exports.getPost = (req, res, next) => {
       res.status(200).json({
         message: "Fetched Posts Successfully!",
         post: loadedPost,
-        posts: loadedPosts.slice(-3),
+        posts: loadedPosts.slice(-4),
         user: user,
         likedPosts: likedPosts,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.addComment = (req, res, next) => {
+  const postId = req.params.postId;
+  const comment = req.body.comment;
+  let loadedUser;
+  User.findById({ _id: req.userId })
+    .then((user) => {
+      loadedUser = user;
+      return Post.findById({ _id: postId });
+    })
+    .then((post) => {
+      post.comments.push({
+        name: loadedUser.name,
+        comment: comment,
+      });
+      return post.save();
+    })
+    .then((result) => {
+      res.status(201).json({
+        _id: result.comments.slice(-1)[0].id,
+        message: "Success",
+        name: loadedUser.name,
       });
     })
     .catch((err) => {
