@@ -191,3 +191,29 @@ exports.userAccount = (req, res, next) => {
       next(err);
     });
 };
+
+exports.ViewProfile = (req, res, next) => {
+  const userId = req.params.userId;
+  User.findById({ _id: userId })
+    .populate("posts")
+    .then((user) => {
+      if (!user) {
+        const error = new Error("Failed");
+        error.statusCode = 401;
+        throw error;
+      }
+      res.status(200).json({
+        message: "done",
+        user: user,
+        likedPosts: user.likedPosts,
+        posts: user.posts,
+        loggedInUser: req.userId,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};

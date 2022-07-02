@@ -24,4 +24,6 @@ router.post("/addComment/:postId", isAuth, postControllers.addComment);
 
 router.get("/account", isAuth, postControllers.userAccount);
 
+router.get("/user/:userId", isAuth, postControllers.ViewProfile);
+
 module.exports = router;
