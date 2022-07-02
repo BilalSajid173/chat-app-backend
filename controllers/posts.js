@@ -169,7 +169,8 @@ exports.addComment = (req, res, next) => {
 };
 
 exports.userAccount = (req, res, next) => {
-  User.findById({ _id: req.userId }).populate("posts")
+  User.findById({ _id: req.userId })
+    .populate("posts")
     .then((user) => {
       if (!user) {
         const error = new Error("Failed");
