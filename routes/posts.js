@@ -21,4 +21,7 @@ router.get("/likepost/:postId", isAuth, postControllers.likePost);
 router.get("/singlepost/:postId", isAuth, postControllers.getPost);
 
 router.post("/addComment/:postId", isAuth, postControllers.addComment);
+
+router.get("/account", isAuth, postControllers.userAccount);
+
 module.exports = router;

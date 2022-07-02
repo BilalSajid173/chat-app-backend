@@ -167,3 +167,26 @@ exports.addComment = (req, res, next) => {
       next(err);
     });
 };
+
+exports.userAccount = (req, res, next) => {
+  User.findById({ _id: req.userId }).populate("posts")
+    .then((user) => {
+      if (!user) {
+        const error = new Error("Failed");
+        error.statusCode = 401;
+        throw error;
+      }
+      res.status(200).json({
+        message: "done",
+        user: user,
+        likedPosts: user.likedPosts,
+        posts: user.posts,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
