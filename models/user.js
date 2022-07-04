@@ -13,6 +13,21 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  address: {
+    type: String,
+  },
+  linkedIn: {
+    type: String,
+  },
+  github: {
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
+  number: {
+    type: Number,
+  },
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,

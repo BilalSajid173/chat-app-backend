@@ -26,4 +26,6 @@ router.get("/account", isAuth, postControllers.userAccount);
 
 router.get("/user/:userId", isAuth, postControllers.ViewProfile);
 
+router.get("/edit-profile", isAuth, postControllers.getEditProfile);
+
 module.exports = router;
