@@ -237,3 +237,37 @@ exports.getEditProfile = (req, res, next) => {
       next(err);
     });
 };
+
+exports.postEditProfile = (req, res, next) => {
+  const email = req.body.email;
+  const name = req.body.name;
+  const address = req.body.address;
+  const bio = req.body.bio;
+  const number = req.body.number;
+  const linkedIn = req.body.linkedIn;
+  const github = req.body.github;
+
+  User.findOneAndUpdate(
+    { _id: req.userId },
+    { email, name, address, bio, number, linkedIn, github },
+    { new: true }
+  )
+    .then((user) => {
+      console.log(user)
+      if (!user) {
+        const error = new Error("Failed");
+        error.statusCode = 401;
+        throw error;
+      }
+      res.status(201).json({
+        message: "Success",
+        user,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
