@@ -28,6 +28,12 @@ const UserSchema = new mongoose.Schema({
   number: {
     type: Number,
   },
+  friends: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,

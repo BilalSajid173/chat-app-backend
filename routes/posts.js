@@ -30,4 +30,6 @@ router.get("/edit-profile", isAuth, postControllers.getEditProfile);
 
 router.post("/edit-profile", isAuth, postControllers.postEditProfile);
 
+router.get("/add-friend/:remove/:userId", isAuth, postControllers.addFriend);
+
 module.exports = router;

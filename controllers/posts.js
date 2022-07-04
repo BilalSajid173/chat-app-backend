@@ -194,6 +194,8 @@ exports.userAccount = (req, res, next) => {
 
 exports.ViewProfile = (req, res, next) => {
   const userId = req.params.userId;
+  let loadedUser;
+  let isFriend;
   User.findById({ _id: userId })
     .populate("posts")
     .then((user) => {
@@ -202,12 +204,22 @@ exports.ViewProfile = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      loadedUser = user;
+      return User.findById({ _id: req.userId });
+    })
+    .then((user) => {
+      if (user.friends.includes(userId)) {
+        isFriend = true;
+      } else {
+        isFriend = false;
+      }
       res.status(200).json({
         message: "done",
-        user: user,
+        user: loadedUser,
         likedPosts: user.likedPosts,
-        posts: user.posts,
+        posts: loadedUser.posts,
         loggedInUser: req.userId,
+        isFriend: isFriend,
       });
     })
     .catch((err) => {
@@ -253,7 +265,7 @@ exports.postEditProfile = (req, res, next) => {
     { new: true }
   )
     .then((user) => {
-      console.log(user)
+      console.log(user);
       if (!user) {
         const error = new Error("Failed");
         error.statusCode = 401;
@@ -262,6 +274,34 @@ exports.postEditProfile = (req, res, next) => {
       res.status(201).json({
         message: "Success",
         user,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.addFriend = (req, res, next) => {
+  const remove = req.params.remove;
+  const userId = req.params.userId;
+  User.findById({ _id: req.userId })
+    .then((user) => {
+      if (remove === "true") {
+        const newFriends = user.friends.filter(
+          (id) => id.toString() !== userId
+        );
+        user.friends = [...newFriends];
+      } else {
+        user.friends.push(userId);
+      }
+      return user.save();
+    })
+    .then((result) => {
+      res.status(200).json({
+        message: "success",
       });
     })
     .catch((err) => {
