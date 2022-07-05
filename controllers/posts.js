@@ -50,7 +50,7 @@ exports.getAllPosts = (req, res, next) => {
     .populate("author")
     .then((posts) => {
       loadedposts = posts;
-      return User.findById({ _id: req.userId });
+      return User.findById({ _id: req.userId }).populate("friends");
     })
     .then((user) => {
       const likedPosts = user.likedPosts;
