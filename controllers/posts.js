@@ -311,3 +311,30 @@ exports.addFriend = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getFriends = (req, res, next) => {
+  User.findById(req.userId)
+    .populate({
+      path: "friends",
+      populate: {
+        path: "posts",
+        model: "Post",
+        populate: {
+          path: "author",
+          model: "User",
+        },
+      },
+    })
+    .then((user) => {
+      res.status(200).json({
+        user: user,
+        message: "Success",
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
