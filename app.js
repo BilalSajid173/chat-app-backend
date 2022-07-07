@@ -1,10 +1,22 @@
 const express = require("express");
+const app = express();
 const bodyparser = require("body-parser");
 const mongoose = require("mongoose");
 const authRoutes = require("./routes/auth");
 const postRoutes = require("./routes/posts");
+const http = require("http");
+const server = http.createServer(app);
+const io = require("socket.io")(server, { cors: { origin: "*" } });
+io.on("connection", (socket) => {
+  console.log("Client Connected");
+  socket.on("joinroom", (roomid) => {
+    socket.join(roomid);
+  });
 
-const app = express();
+  socket.on("message", (msg, roomid) => {
+    socket.to(roomid).emit("sendmsg", msg);
+  });
+});
 
 app.use(bodyparser.json());
 
@@ -30,7 +42,7 @@ app.use((error, req, res, next) => {
 mongoose
   .connect("mongodb://localhost:27017/chat-app-db")
   .then((result) => {
-    app.listen(8080);
+    server.listen(8080);
   })
   .catch((err) => {
     console.log(err);
