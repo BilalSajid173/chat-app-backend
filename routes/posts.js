@@ -38,4 +38,6 @@ router.get("/chat/:roomId/:userId", isAuth, postControllers.getMessages);
 
 router.post("/addmessage", isAuth, postControllers.addMessage);
 
+router.get("/allchats", isAuth, postControllers.getAllChats);
+
 module.exports = router;

@@ -451,3 +451,24 @@ exports.addMessage = (req, res, next) => {
       next(err);
     });
 };
+
+exports.getAllChats = (req, res, next) => {
+  User.findById(req.userId)
+    .then((user) => {
+      const userData = user.chats.map((chat) => {
+        return {
+          roomId: chat.roomId,
+          with: chat.with,
+        };
+      });
+      res.status(200).json({
+        userData,
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
