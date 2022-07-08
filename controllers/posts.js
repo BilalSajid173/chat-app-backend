@@ -213,7 +213,18 @@ exports.ViewProfile = (req, res, next) => {
       } else {
         isFriend = false;
       }
+      let roomId;
+      const filteredArr = user.chats.filter((chat) => {
+        return chat.with === userId;
+      });
+      if (filteredArr.length > 0) {
+        roomId = filteredArr[0].roomId;
+      } else {
+        roomId = "_" + Math.random().toString(36).substr(2, 11);
+      }
+      console.log(roomId);
       res.status(200).json({
+        roomId: roomId,
         message: "done",
         user: loadedUser,
         likedPosts: user.likedPosts,
@@ -330,6 +341,45 @@ exports.getFriends = (req, res, next) => {
         user: user,
         message: "Success",
       });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.getMessages = (req, res, next) => {
+  const roomId = req.params.roomId;
+  const userId = req.params.userId;
+  let messages = [];
+  let username;
+  User.findById(req.userId)
+    .then((user) => {
+      const filteredArr = user.chats.filter((chat) => {
+        return chat.roomId === roomId;
+      });
+      if (filteredArr.length > 0) {
+        console.log("here");
+        messages = filteredArr[0].messages;
+        username = filteredArr[0].with;
+        res.status(200).json({
+          message: "Success",
+          messages: messages,
+          username: username,
+        });
+      } else {
+        User.findById(userId).then((user) => {
+          console.log(user.name);
+          username = user.name;
+          res.status(200).json({
+            message: "Success",
+            messages: messages,
+            username: username,
+          });
+        });
+      }
     })
     .catch((err) => {
       if (!err.statusCode) {

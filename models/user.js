@@ -46,6 +46,26 @@ const UserSchema = new mongoose.Schema({
       ref: "Post",
     },
   ],
+  chats: [
+    {
+      roomId: {
+        type: String,
+      },
+      with: {
+        type: String,
+      },
+      messages: [
+        {
+          content: {
+            type: String,
+          },
+          to: {
+            type: Boolean,
+          },
+        },
+      ],
+    },
+  ],
 });
 
 module.exports = mongoose.model("User", UserSchema);
