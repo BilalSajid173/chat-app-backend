@@ -215,7 +215,7 @@ exports.ViewProfile = (req, res, next) => {
       }
       let roomId;
       const filteredArr = user.chats.filter((chat) => {
-        return chat.with === userId;
+        return chat.with.userId === userId;
       });
       if (filteredArr.length > 0) {
         roomId = filteredArr[0].roomId;
@@ -361,9 +361,10 @@ exports.getMessages = (req, res, next) => {
         return chat.roomId === roomId;
       });
       if (filteredArr.length > 0) {
-        console.log("here");
+        // console.log("here");
         messages = filteredArr[0].messages;
-        username = filteredArr[0].with;
+        username = filteredArr[0].with.name;
+        // console.log(messages, username);
         res.status(200).json({
           message: "Success",
           messages: messages,
@@ -371,7 +372,7 @@ exports.getMessages = (req, res, next) => {
         });
       } else {
         User.findById(userId).then((user) => {
-          console.log(user.name);
+          // console.log(user.name);
           username = user.name;
           res.status(200).json({
             message: "Success",
@@ -380,6 +381,68 @@ exports.getMessages = (req, res, next) => {
           });
         });
       }
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.addMessage = (req, res, next) => {
+  const roomId = req.body.roomId;
+  const userId = req.body.userId;
+  const msg = req.body.content;
+  // console.log(roomId, userId, msg);
+  User.findById(req.userId)
+    .then((user) => {
+      const filteredArr = user.chats.filter((chat) => {
+        return chat.roomId === roomId;
+      });
+      if (filteredArr.length > 0) {
+        user.chats.forEach((chat) => {
+          if (chat.roomId === roomId) {
+            chat.messages.push({
+              content: msg,
+              to: true,
+            });
+          }
+        });
+        user.save();
+        User.findById(userId).then((user) => {
+          user.chats.forEach((chat) => {
+            if (chat.roomId === roomId) {
+              chat.messages.push({
+                content: msg,
+                to: false,
+              });
+            }
+          });
+          return user.save();
+        });
+      } else {
+        User.findById(userId).then((otheruser) => {
+          user.chats.push({
+            roomId: roomId,
+            with: { userId: userId, name: otheruser.name },
+            messages: [{ content: msg, to: true }],
+          });
+          user.save();
+          otheruser.chats.push({
+            roomId: roomId,
+            with: { userId: req.userId, name: user.name },
+            messages: [{ content: msg, to: false }],
+          });
+          return otheruser.save();
+        });
+      }
+    })
+    .then((result) => {
+      res.status(200).json({
+        message: "Success",
+        result,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {

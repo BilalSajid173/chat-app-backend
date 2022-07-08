@@ -36,4 +36,6 @@ router.get("/friendlist", isAuth, postControllers.getFriends);
 
 router.get("/chat/:roomId/:userId", isAuth, postControllers.getMessages);
 
+router.post("/addmessage", isAuth, postControllers.addMessage);
+
 module.exports = router;

@@ -52,7 +52,12 @@ const UserSchema = new mongoose.Schema({
         type: String,
       },
       with: {
-        type: String,
+        userId: {
+          type: String,
+        },
+        name: {
+          type: String,
+        },
       },
       messages: [
         {
