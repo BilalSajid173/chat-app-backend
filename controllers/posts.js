@@ -45,9 +45,20 @@ exports.createPost = (req, res, next) => {
 };
 
 exports.getAllPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 5;
+  let totalItems;
   let loadedposts;
   Post.find()
-    .populate("author")
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+        .populate("author")
+        .sort({ createdAt: -1 });
+    })
     .then((posts) => {
       loadedposts = posts;
       return User.findById({ _id: req.userId }).populate("friends");
@@ -59,6 +70,7 @@ exports.getAllPosts = (req, res, next) => {
         posts: loadedposts,
         user: user,
         likedPosts: likedPosts,
+        totalItems: totalItems,
       });
     })
     .catch((err) => {
