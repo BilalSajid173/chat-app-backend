@@ -65,12 +65,14 @@ exports.getAllPosts = (req, res, next) => {
     })
     .then((user) => {
       const likedPosts = user.likedPosts;
+      const savedPosts = user.savedPosts;
       res.status(200).json({
         message: "Fetched Posts Successfully!",
         posts: loadedposts,
         user: user,
         likedPosts: likedPosts,
         totalItems: totalItems,
+        savedPosts: savedPosts,
       });
     })
     .catch((err) => {
@@ -92,6 +94,31 @@ exports.likePost = (req, res, next) => {
         user.likedPosts = [...newLikedPosts];
       } else {
         user.likedPosts.push(postId);
+      }
+      return user.save();
+    })
+    .then((result) => {
+      res.status(201).json({ message: "Successful" });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.savePost = (req, res, next) => {
+  const postId = req.params.postId;
+  User.findById({ _id: req.userId })
+    .then((user) => {
+      if (user.savedPosts.includes(postId)) {
+        const newSavedPosts = user.savedPosts.filter(
+          (id) => id.toString() !== postId
+        );
+        user.savedPosts = [...newSavedPosts];
+      } else {
+        user.savedPosts.push(postId);
       }
       return user.save();
     })
@@ -133,12 +160,14 @@ exports.getPost = (req, res, next) => {
     })
     .then((user) => {
       const likedPosts = user.likedPosts;
+      const savedPosts = user.savedPosts;
       res.status(200).json({
         message: "Fetched Posts Successfully!",
         post: loadedPost,
         posts: loadedPosts.slice(-4),
         user: user,
         likedPosts: likedPosts,
+        savedPosts: savedPosts,
       });
     })
     .catch((err) => {
@@ -193,6 +222,7 @@ exports.userAccount = (req, res, next) => {
         message: "done",
         user: user,
         likedPosts: user.likedPosts,
+        savedPosts: user.savedPosts,
         posts: user.posts,
       });
     })
@@ -240,6 +270,7 @@ exports.ViewProfile = (req, res, next) => {
         message: "done",
         user: loadedUser,
         likedPosts: user.likedPosts,
+        savedPosts: user.savedPosts,
         posts: loadedUser.posts,
         loggedInUser: req.userId,
         isFriend: isFriend,
