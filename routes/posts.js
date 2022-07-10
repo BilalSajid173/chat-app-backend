@@ -24,6 +24,8 @@ router.get("/singlepost/:postId", isAuth, postControllers.getPost);
 
 router.post("/addComment/:postId", isAuth, postControllers.addComment);
 
+router.get("/getComments/:postId", isAuth, postControllers.getComments);
+
 router.get("/account", isAuth, postControllers.userAccount);
 
 router.get("/user/:userId", isAuth, postControllers.ViewProfile);

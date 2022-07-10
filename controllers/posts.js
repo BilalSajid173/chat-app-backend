@@ -209,6 +209,23 @@ exports.addComment = (req, res, next) => {
     });
 };
 
+exports.getComments = (req, res, next) => {
+  const postId = req.params.postId;
+  Post.findById(postId)
+    .then((post) => {
+      res.status(200).json({
+        comments: post.comments,
+        message: "Success",
+      });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
 exports.userAccount = (req, res, next) => {
   User.findById({ _id: req.userId })
     .populate("posts")
