@@ -1,8 +1,9 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const { validationResult } = require("express-validator");
+const { cloudinary } = require("../utils/cloudinary");
 
-exports.createPost = (req, res, next) => {
+exports.createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error("Post Creation Failed");
@@ -11,12 +12,25 @@ exports.createPost = (req, res, next) => {
   }
   const title = req.body.title;
   const content = req.body.content;
+  const image = req.body.image;
+  let publicId;
+  console.log(image);
+  try {
+    const response = await cloudinary.uploader.upload(image, {
+      upload_preset: "social-app-setup",
+    });
+    console.log(response);
+    publicId = response.public_id;
+  } catch (error) {
+    console.log(error);
+  }
   let author;
 
   const post = new Post({
     title: title,
     content: content,
     author: req.userId,
+    publicId: publicId,
   });
 
   post

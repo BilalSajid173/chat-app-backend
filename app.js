@@ -10,7 +10,7 @@ const io = require("socket.io")(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
   console.log("Client Connected");
   socket.on("joinroom", (roomid) => {
-    console.log("room joined")
+    console.log("room joined");
     socket.join(roomid);
   });
 
@@ -19,7 +19,7 @@ io.on("connection", (socket) => {
   });
 });
 
-app.use(bodyparser.json());
+app.use(bodyparser.json({ limit: "50mb" }));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
