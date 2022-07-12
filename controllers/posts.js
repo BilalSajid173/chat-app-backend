@@ -83,6 +83,8 @@ exports.getAllPosts = (req, res, next) => {
   const perPage = 5;
   let totalItems;
   let loadedposts;
+  let likedPosts;
+  let savedPosts;
   Post.find()
     .countDocuments()
     .then((count) => {
@@ -98,12 +100,22 @@ exports.getAllPosts = (req, res, next) => {
       return User.findById({ _id: req.userId }).populate("friends");
     })
     .then((user) => {
-      const likedPosts = user.likedPosts;
-      const savedPosts = user.savedPosts;
+      likedPosts = user.likedPosts;
+      savedPosts = user.savedPosts;
+      loadedUser = user;
+      return User.find().countDocuments();
+    })
+    .then((count) => {
+      var random = Math.floor(Math.random() * count);
+      return User.find().skip(random).limit(5);
+    })
+    .then((users) => {
+      const randompeople = users.filter((user) => user.id !== req.userId);
       res.status(200).json({
         message: "Fetched Posts Successfully!",
+        randompeople: randompeople,
         posts: loadedposts,
-        user: user,
+        user: loadedUser,
         likedPosts: likedPosts,
         totalItems: totalItems,
         savedPosts: savedPosts,
@@ -547,9 +559,10 @@ exports.addMessage = (req, res, next) => {
 };
 
 exports.getAllChats = (req, res, next) => {
+  const userData = [];
+  let counter = 0;
   User.findById(req.userId)
     .then((user) => {
-      const userData = [];
       user.chats.forEach((chat) => {
         const roomId = chat.roomId;
         const withUser = chat.with;
@@ -568,9 +581,12 @@ exports.getAllChats = (req, res, next) => {
               roomId: roomId,
               withUser: withUser,
             });
-            res.status(200).json({
-              userData,
-            });
+            counter++;
+            if (counter === user.chats.length) {
+              res.status(200).json({
+                userData,
+              });
+            }
           });
       });
     })
