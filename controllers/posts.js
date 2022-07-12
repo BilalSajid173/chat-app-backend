@@ -14,12 +14,10 @@ exports.createPost = async (req, res, next) => {
   const content = req.body.content;
   const image = req.body.image;
   let publicId;
-  console.log(image);
   try {
     const response = await cloudinary.uploader.upload(image, {
       upload_preset: "social-app-setup",
     });
-    console.log(response);
     publicId = response.public_id;
   } catch (error) {
     console.log(error);
@@ -55,6 +53,30 @@ exports.createPost = async (req, res, next) => {
         err.statusCode = 500;
       }
       next(err);
+    });
+};
+
+exports.setUserImage = async (req, res, next) => {
+  const image = req.body.image;
+  let publicId;
+  try {
+    const response = await cloudinary.uploader.upload(image, {
+      upload_preset: "social-app-setup",
+    });
+    publicId = response.public_id;
+  } catch (error) {
+    console.log(error);
+  }
+  User.findById(req.userId)
+    .then((user) => {
+      user.imageId = publicId;
+      return user.save();
+    })
+    .then((resp) => {
+      res.json({
+        message: "success",
+        publicId,
+      });
     });
 };
 
@@ -529,14 +551,29 @@ exports.addMessage = (req, res, next) => {
 exports.getAllChats = (req, res, next) => {
   User.findById(req.userId)
     .then((user) => {
-      const userData = user.chats.map((chat) => {
-        return {
-          roomId: chat.roomId,
-          with: chat.with,
-        };
-      });
-      res.status(200).json({
-        userData,
+      const userData = [];
+      user.chats.forEach((chat) => {
+        const roomId = chat.roomId;
+        const withUser = chat.with;
+        User.findById(chat.with.userId)
+          .then((user) => {
+            const obj = {
+              imageId: user.imageId,
+              address: user.address,
+            };
+            return obj;
+          })
+          .then((obj) => {
+            userData.push({
+              address: obj.address,
+              imageId: obj.imageId,
+              roomId: roomId,
+              withUser: withUser,
+            });
+            res.status(200).json({
+              userData,
+            });
+          });
       });
     })
     .catch((err) => {

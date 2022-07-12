@@ -52,6 +52,9 @@ const UserSchema = new mongoose.Schema({
       ref: "Post",
     },
   ],
+  imageId: {
+    type: String,
+  },
   chats: [
     {
       roomId: {

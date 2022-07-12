@@ -14,6 +14,8 @@ router.post(
   postControllers.createPost
 );
 
+router.post("/addimage", isAuth, postControllers.setUserImage);
+
 router.get("/allposts", isAuth, postControllers.getAllPosts);
 
 router.get("/likepost/:postId", isAuth, postControllers.likePost);
