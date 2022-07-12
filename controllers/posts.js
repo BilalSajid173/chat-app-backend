@@ -10,7 +10,6 @@ exports.createPost = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  const title = req.body.title;
   const content = req.body.content;
   const image = req.body.image;
   let publicId;
@@ -25,7 +24,6 @@ exports.createPost = async (req, res, next) => {
   let author;
 
   const post = new Post({
-    title: title,
     content: content,
     author: req.userId,
     publicId: publicId,
