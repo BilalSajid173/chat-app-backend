@@ -43,4 +43,6 @@ router.post("/addmessage", isAuth, postControllers.addMessage);
 
 router.get("/allchats", isAuth, postControllers.getAllChats);
 
+router.get("/savedposts", isAuth, postControllers.getSavedPosts);
+
 module.exports = router;

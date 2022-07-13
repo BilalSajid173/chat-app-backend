@@ -62,6 +62,7 @@ exports.setUserImage = async (req, res, next) => {
       upload_preset: "social-app-setup",
     });
     publicId = response.public_id;
+    console.log(publicId);
   } catch (error) {
     console.log(error);
   }
@@ -595,6 +596,31 @@ exports.getAllChats = (req, res, next) => {
           userData,
         });
       }
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.getSavedPosts = (req, res, next) => {
+  User.findById(req.userId)
+    .populate({
+      path: "savedPosts",
+      populate: {
+        path: "author",
+        model: "User",
+      },
+    })
+    .then((user) => {
+      const likedPosts = user.likedPosts;
+      res.status(200).json({
+        message: "Success",
+        likedPosts: likedPosts,
+        user: user,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {

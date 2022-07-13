@@ -3,6 +3,8 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// chat-app/noynwdkfnsyt33lrsyld
+
 exports.signup = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
