@@ -12,6 +12,7 @@ io.on("connection", (socket) => {
   socket.on("joinroom", (roomid) => {
     console.log("room joined");
     socket.join(roomid);
+    socket.to(roomid).emit("online");
   });
 
   socket.on("message", (msg, roomid) => {

@@ -106,7 +106,7 @@ exports.getAllPosts = (req, res, next) => {
       return User.find().countDocuments();
     })
     .then((count) => {
-      var random = Math.floor(Math.random() * count);
+      var random = Math.floor(Math.random() * (count - 1));
       return User.find().skip(random).limit(5);
     })
     .then((users) => {
@@ -563,32 +563,38 @@ exports.getAllChats = (req, res, next) => {
   let counter = 0;
   User.findById(req.userId)
     .then((user) => {
-      user.chats.forEach((chat) => {
-        const roomId = chat.roomId;
-        const withUser = chat.with;
-        User.findById(chat.with.userId)
-          .then((user) => {
-            const obj = {
-              imageId: user.imageId,
-              address: user.address,
-            };
-            return obj;
-          })
-          .then((obj) => {
-            userData.push({
-              address: obj.address,
-              imageId: obj.imageId,
-              roomId: roomId,
-              withUser: withUser,
-            });
-            counter++;
-            if (counter === user.chats.length) {
-              res.status(200).json({
-                userData,
+      if (user.chats.length > 0) {
+        user.chats.forEach((chat) => {
+          const roomId = chat.roomId;
+          const withUser = chat.with;
+          User.findById(chat.with.userId)
+            .then((user) => {
+              const obj = {
+                imageId: user.imageId,
+                address: user.address,
+              };
+              return obj;
+            })
+            .then((obj) => {
+              userData.push({
+                address: obj.address,
+                imageId: obj.imageId,
+                roomId: roomId,
+                withUser: withUser,
               });
-            }
-          });
-      });
+              counter++;
+              if (counter === user.chats.length) {
+                res.status(200).json({
+                  userData,
+                });
+              }
+            });
+        });
+      } else {
+        res.status(200).json({
+          userData,
+        });
+      }
     })
     .catch((err) => {
       if (!err.statusCode) {
