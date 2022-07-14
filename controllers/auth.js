@@ -2,6 +2,7 @@ const User = require("../models/user");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 // chat-app/noynwdkfnsyt33lrsyld
 
@@ -69,12 +70,14 @@ exports.login = (req, res, next) => {
         throw error;
       }
 
+      const secureKey = process.env.SECURE_KEY
+
       const token = jwt.sign(
         {
           email: loadedUser.email,
           userId: loadedUser._id.toString(),
         },
-        "ThisisTheSecureKey",
+        secureKey,
         { expiresIn: "1h" }
       );
       res.status(200).json({
