@@ -8,9 +8,7 @@ const http = require("http");
 const server = http.createServer(app);
 const io = require("socket.io")(server, { cors: { origin: "*" } });
 io.on("connection", (socket) => {
-  console.log("Client Connected");
   socket.on("joinroom", (roomid) => {
-    console.log("room joined");
     socket.join(roomid);
     socket.to(roomid).emit("online");
   });

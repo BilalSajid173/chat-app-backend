@@ -16,6 +16,7 @@ exports.signup = (req, res, next) => {
   const email = req.body.email;
   const name = req.body.name;
   const password = req.body.password;
+  const imageId = "chat-app/noynwdkfnsyt33lrsyld";
 
   bcrypt
     .hash(password, 12)
@@ -24,6 +25,7 @@ exports.signup = (req, res, next) => {
         email: email,
         password: hashedPassword,
         name: name,
+        imageId: imageId,
       });
       return user.save();
     })

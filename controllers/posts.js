@@ -62,7 +62,6 @@ exports.setUserImage = async (req, res, next) => {
       upload_preset: "social-app-setup",
     });
     publicId = response.public_id;
-    console.log(publicId);
   } catch (error) {
     console.log(error);
   }
@@ -72,7 +71,7 @@ exports.setUserImage = async (req, res, next) => {
       return user.save();
     })
     .then((resp) => {
-      res.json({
+      res.status(200).json({
         message: "success",
         publicId,
       });
@@ -383,7 +382,6 @@ exports.postEditProfile = (req, res, next) => {
     { new: true }
   )
     .then((user) => {
-      console.log(user);
       if (!user) {
         const error = new Error("Failed");
         error.statusCode = 401;
